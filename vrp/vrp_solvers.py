@@ -60,7 +60,7 @@ class DBScanSolver(VRPSolver):
     MAX_LEN = 10
     MAX_WEIGHT = 1000
 
-    def __init__(self, problem, anti_noiser = True):
+    def __init__(self, problem, anti_noiser = True, MAX_LEN=None):
         self.problem = problem
         self.anti_noiser = anti_noiser
 

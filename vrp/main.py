@@ -1,3 +1,4 @@
+import os
 from qubo_helper import Qubo
 from tsp_problem import TSPProblem 
 from vrp_problem import VRPProblem
@@ -46,8 +47,11 @@ if __name__ == '__main__':
         #test = read_test(TEST)
 
         # Christofides_79
-        GRAPH = '../tests_cvrp/christofides-1979_graphs/CMT' + str(t) + '_medium.csv'
-        TEST = '../tests_cvrp/christofides-1979_GLAD/CMT' + str(t) + '_medium.test'
+        #GRAPH = '../tests_cvrp/christofides-1979_graphs/CMT' + str(t) + '_medium.csv'
+        #TEST = '../tests_cvrp/christofides-1979_GLAD/CMT' + str(t) + '_medium.test'
+        
+        GRAPH = os.getcwd()
+        TEST = 'scenario'
         test = read_full_test(TEST, GRAPH, time_windows = False)
 
         # Christofides_69
@@ -69,8 +73,10 @@ if __name__ == '__main__':
         capacity_const = 0. #not important in this example
         time_const = 0. #not important in this example
 
-        problem = VRPProblem(sources, costs, time_costs, capacities, dests, weigths, time_windows)
-        solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False, MAX_LEN = 10))
+        problem = VRPProblem(sources, costs, time_costs, capacities, dests, weigths)
+        #solver = FullQuboSolver(problem)
+        #solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False, MAX_LEN = 10))
+        solver = SolutionPartitioningSolver(problem, FullQuboSolver(problem))
 
         #problem = VRPTWProblem(sources, costs, time_costs, capacities, dests, weigths, time_windows)
         #vrp_solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False))

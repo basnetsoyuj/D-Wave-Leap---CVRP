@@ -18,7 +18,7 @@ DIST_TO_TIME = float(1) / float(444)
 def create_graph_from_csv(path):
     g = nx.DiGraph(directed=True)
 
-    with open(path+"/vertex_weigths.csv", mode='r') as e_infile:
+    with open(path+"/vertex_weights.csv", mode='r') as e_infile:
         reader = csv.reader(e_infile)
         next(reader)
         for row in reader:
@@ -30,7 +30,7 @@ def create_graph_from_csv(path):
 
     return g
 
-def read_full_test(path, graph_path = GRAPH_PATH):
+def read_full_test(path, graph_path = GRAPH_PATH, time_windows=None):
     graph = create_graph_from_csv(graph_path)
     in_file = open(path, 'r')
     
@@ -60,15 +60,15 @@ def read_full_test(path, graph_path = GRAPH_PATH):
         nodes_id.append(dest)
         time_windows[i + magazines_num] = time_window
         weights[i + magazines_num] = weight
-
     next(in_file)
     vehicles = int(in_file.readline())
     capacities = np.zeros((vehicles), dtype=int)
 
     for i in range(vehicles):
         line = in_file.readline().split()
-        capacities[i] = int(line[1])
-
+        capacities[i] = int(line[0])
+        # print(capacities[i])
+    
     # Creating costs and time_costs matrix.
     costs = np.zeros((nodes_num, nodes_num), dtype=float)
     time_costs = np.zeros((nodes_num, nodes_num), dtype=float)
@@ -76,6 +76,7 @@ def read_full_test(path, graph_path = GRAPH_PATH):
     for i in range(nodes_num):
         source = nodes_id[i]
         _, paths = nx.single_source_dijkstra(graph, source, weight = 'distance')
+        print(paths)
         for j in range(nodes_num):
             d = nodes_id[j]
             path = paths[d]
@@ -86,7 +87,7 @@ def read_full_test(path, graph_path = GRAPH_PATH):
                 costs[i][j] += edge['distance']
                 time_costs[i][j] += edge['time']
                 prev = node
-
+    
     result = dict()
     result['sources'] = [i for i in range(magazines_num)]
     result['dests'] =  [i for i in range(magazines_num, nodes_num)]
