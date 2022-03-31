@@ -15,7 +15,7 @@ You need to prepare 2 files :
 * Scenario text file. Format is described in 'example_scenario'.
 
 ## Running
-
+* Use python3.7.9
 * Choose a solver.
 * Read test by read_test function or read_full_test from input.py.
 * Run solve function from solver in same way as in main.
