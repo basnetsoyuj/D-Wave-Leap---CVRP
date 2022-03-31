@@ -23,6 +23,9 @@ def get_solver(solver_type):
         solver = EmbeddingComposite(DWaveSampler())
     if solver_type == 'hybrid':
         solver = hybrid_solver()
+    if solver_type == 'braket':
+        system = BraketDWaveSampler(device_arn='arn:aws:braket:::device/qpu/d-wave/Advantage_system4')
+        solver = EmbeddingComposite(system)
     if solver_type == 'kerberos':
         solver = KerberosSampler()
     if solver_type == 'qbsolv':
@@ -38,6 +41,8 @@ def solve_qubo(qubo, solver_type = 'qbsolv', limit = 1, num_reads = 50):
     response = None
     if solver_type == 'hybrid':
         response = sampler.sample_qubo(qubo.dict)
+    elif solver_type == "braket":
+        response = QBSolv().sample_qubo(qubo.dict, solver = sampler, chain_strength = 800, num_reads = num_reads)
     elif solver_type == 'qbsolv':
         response = sampler.sample_qubo(qubo.dict, num_reads = num_reads)
     elif solver_type == 'standard':
