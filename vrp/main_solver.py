@@ -13,29 +13,9 @@ from input import *
 
 CAPACITY = 1000
 
-if __name__ == '__main__':
-    tests = ['quantum1-1', 'quantum1-2', 'clustered1-1', 'clustered1-2', 'group1-1', 'group1-2', 'group2-1', 'group2-2', 'group3-1', 'group3-2', 'group4-1', 'group4-2', 'group5-1', 'group5-2', 'group6-1', 'group6-2', 'medium1-1', 'medium1-2'] 
+class MainSolver:
+    def __init__(self, scenario_text, graph_text):
 
-    small_tests = ['clustered1-1', 'clustered1-2', 'group1-1', 'group1-2', 'group2-1', 'group2-2', 'group3-1', 'group3-2', 'group4-1', 'group4-2', 'group5-1', 'group5-2', 'group6-1', 'group6-2', 'medium1-1', 'medium1-2']
-
-    very_small_tests = ['quantum1-1', 'quantum1-2']
-
-    tests_75 = ['quantum1_75-1', 'quantum1_75-2']
-
-    tests_100 = ['quantum1_100-1', 'quantum1_100-2'] 
-
-    tests_150 = ['quantum1_150-1', 'quantum1_150-2']
-
-    tests_200 = ['quantum1_200-1', 'quantum1_200-2']
-
-    T_25 = ['C101', 'C102', 'C103', 'R101', 'R102', 'R103', 'RC101', 'RC102', 'RC103']
-
-    CMT1979 = ['1', '2', '3', '6', '7', '8', '9', '11', '12', '13', '14']
-
-    EN = ['E-n013-k04', 'E-n022-k04', 'E-n023-k03', 'E-n030-k03', 'E-n033-k04', 'E-n051-k05', 'E-n076-k07', 'E-n076-k10', 'E-n076-k14', ]
-
-    for t in ['14']:
-        print("Test : ", t)
 
         # Solomon
         #GRAPH = '../graphs/50/' + str(t) + '.csv'
@@ -50,9 +30,7 @@ if __name__ == '__main__':
         #GRAPH = '../tests_cvrp/christofides-1979_graphs/CMT' + str(t) + '_medium.csv'
         #TEST = '../tests_cvrp/christofides-1979_GLAD/CMT' + str(t) + '_medium.test'
         
-        GRAPH = os.getcwd()
-        TEST = 'scenario'
-        test = read_full_test(TEST, GRAPH, time_windows = False)
+        test, dijkstra_paths = read_full_test(scenario_text, graph_text, time_windows = False)
 
         # Christofides_69
         #GRAPH = '../tests_cvrp/christofides-1969_graphs/' + str(t) + '.csv'
@@ -86,12 +64,19 @@ if __name__ == '__main__':
                 solver_type = 'braket', num_reads = 500)
 
         if result == None:
-            print("Niestety coś poszło nie tak :(\n")
-            continue
+            return ("No solution, something went wrong:(\n")
 
+        
+        altered_result = []
+        for truck_path in result.solution:
+            truck_path = [x + 1 for x in truck_path]
+
+        for truck_path in altered_result:
+            for i in range(len(truck_path) - 1):
+                truck_path[i:i+2] = dijkstra_paths[truck_path[i]][truck_path[i+1]]
+            altered_result.append(truck_path)
+        
         print(result.solution)
-        print(result.check())
-        print(result.total_cost())
-        print(result.all_time_costs())
-        print(result.all_weights())
-        print("\n")
+        print(altered_result)
+        
+        return altered_result

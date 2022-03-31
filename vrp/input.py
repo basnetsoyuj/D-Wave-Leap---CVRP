@@ -1,10 +1,11 @@
+from dis import dis
 import networkx as nx
 import csv
 import math
 from utilities import *
 from itertools import product
 import numpy as np
-
+from io import StringIO
 # format:
 # nodes.csv: id|enu_east|enu_north|enu_up|lla_longitude|lla_latitude|lla_altitude
 # edges.csv: id_1|id_2|distance|time_0|time_1|...|time_23
@@ -15,10 +16,10 @@ TIME_WINDOWS_DIFF = 1
 TIME_WINDOWS_RADIUS = 60
 DIST_TO_TIME = float(1) / float(444)
 
-def create_graph_from_csv(path):
+def create_graph_from_csv(text):
     g = nx.DiGraph(directed=True)
 
-    with open(path+"/vertex_weights.csv", mode='r') as e_infile:
+    with StringIO(text) as e_infile:
         reader = csv.reader(e_infile)
         next(reader)
         for row in reader:
@@ -30,9 +31,9 @@ def create_graph_from_csv(path):
 
     return g
 
-def read_full_test(path, graph_path = GRAPH_PATH, time_windows=None):
-    graph = create_graph_from_csv(graph_path)
-    in_file = open(path, 'r')
+def read_full_test(scenario_text, graph_text, time_windows=None):
+    graph = create_graph_from_csv(graph_text)
+    in_file = StringIO(scenario_text)
     
     # Smaller id's of sources and orders.
     nodes_id = list()
@@ -73,9 +74,11 @@ def read_full_test(path, graph_path = GRAPH_PATH, time_windows=None):
     costs = np.zeros((nodes_num, nodes_num), dtype=float)
     time_costs = np.zeros((nodes_num, nodes_num), dtype=float)
 
+    dijkstra_paths = []
     for i in range(nodes_num):
         source = nodes_id[i]
         _, paths = nx.single_source_dijkstra(graph, source, weight = 'distance')
+        dijkstra_paths.append(paths)
         print(paths)
         for j in range(nodes_num):
             d = nodes_id[j]
@@ -98,7 +101,7 @@ def read_full_test(path, graph_path = GRAPH_PATH, time_windows=None):
     result['capacities'] = capacities
 
     in_file.close()
-    return result
+    return result, dijkstra_paths
 
 def read_test(path):
     in_file = open(path, 'r')
@@ -152,7 +155,7 @@ def read_test(path):
     return result
 
 def create_test(in_path, out_path):
-    test = read_full_test(in_path)
+    test, _ = read_full_test(in_path)
     out_file = open(out_path, 'w+')
 
     # Number of magazines. Magazines have numbers 0, 1, 2, ...
