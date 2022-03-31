@@ -1,4 +1,5 @@
 from dwave.system.samplers import DWaveSampler
+from braket.ocean_plugin import BraketDWaveSampler
 from dwave.system.composites import EmbeddingComposite
 from dwave_qbsolv import QBSolv
 from hybrid.reference.kerberos import KerberosSampler
@@ -24,8 +25,8 @@ def get_solver(solver_type):
     if solver_type == 'hybrid':
         solver = hybrid_solver()
     if solver_type == 'braket':
-        system = BraketDWaveSampler(device_arn='arn:aws:braket:::device/qpu/d-wave/Advantage_system4')
-        solver = EmbeddingComposite(system)
+        sampler = BraketDWaveSampler(device_arn='arn:aws:braket:::device/qpu/d-wave/Advantage_system4')
+        solver = EmbeddingComposite(sampler)
     if solver_type == 'kerberos':
         solver = KerberosSampler()
     if solver_type == 'qbsolv':
@@ -42,7 +43,7 @@ def solve_qubo(qubo, solver_type = 'qbsolv', limit = 1, num_reads = 50):
     if solver_type == 'hybrid':
         response = sampler.sample_qubo(qubo.dict)
     elif solver_type == "braket":
-        response = QBSolv().sample_qubo(qubo.dict, solver = sampler, chain_strength = 800, num_reads = num_reads)
+        response = sampler.sample_qubo(qubo.dict, chain_strength = 800, num_reads = num_reads)
     elif solver_type == 'qbsolv':
         response = sampler.sample_qubo(qubo.dict, num_reads = num_reads)
     elif solver_type == 'standard':

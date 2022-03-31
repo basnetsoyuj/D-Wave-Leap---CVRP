@@ -83,7 +83,7 @@ if __name__ == '__main__':
         #solver = MergingTimeWindowsVRPTWSolver(problem, vrp_solver)
 
         result = solver.solve(only_one_const, order_const, capacity_const,
-                solver_type = 'qbsolv', num_reads = 500)
+                solver_type = 'braket', num_reads = 500)
 
         if result == None:
             print("Niestety coś poszło nie tak :(\n")
