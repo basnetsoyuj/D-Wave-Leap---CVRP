@@ -13,7 +13,7 @@ mode = "driving"
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 
-@app.route('/', method=["GET"])
+@app.route('/', methods=["GET"])
 def rootdir():
     return '''
     {
@@ -88,15 +88,18 @@ def main():
         final.append(total_cost)
         for i in range(num_dest ** 2):
             if final[0][i] != final[1][i]:
-                string_ += f"{final[0][i]} {final[1][i]} {final[2][i]}\n"
+                graph_text += f"{final[0][i]},{final[1][i]},{final[2][i]}\n"
         
-        scenario_text = f"1\n1\n\n{num_dest}\n"
+        scenario_text = f"1\n1\n\n{num_dest - 1}\n"
 
         for i in range(2, num_dest + 1):
             scenario_text += f"{i} 0 0 10\n"
         
         scenario_text += "\n2\n20\n20"
-
-        return MainSolver(scenario_text = scenario_text, graph_text=graph_text)
+        # print(graph_text)
+        # print('-'*50)
+        # print(scenario_text)
+        solver =  MainSolver(scenario_text = scenario_text, graph_text=graph_text)
+        return solver.return_value()
 
 app.run()

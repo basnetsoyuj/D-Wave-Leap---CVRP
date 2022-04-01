@@ -79,4 +79,7 @@ class MainSolver:
         print(result.solution)
         print(altered_result)
         
-        return altered_result
+        self.value = altered_result
+        
+    def return_value(self):
+        return self.value
