@@ -1,12 +1,15 @@
+import json
 import flask
+from flask import Response
 from flask import request, jsonify
 import googlemaps
 from main_solver import MainSolver
 
 # ASSUMPTIONS
-fuel_efficiency = 0.23
-price_weight = 0.8
-fuel_price = 0.868
+fuel_efficiency = 1 
+#price_weight = 1
+price_weight = 1
+fuel_price = 1
 mode = "driving"
 
 
@@ -72,7 +75,7 @@ def main():
         total_cost = []
         for i in range(num_dest ** 2):
             ac = price_weight * all_dist[i] * fuel_efficiency * fuel_price
-            ac += (1 - price_weight) * all_time[i]
+            # ac += (1 - price_weight) * all_time[i]
             total_cost.append(ac)
         
         final=[]
@@ -100,6 +103,12 @@ def main():
         # print('-'*50)
         # print(scenario_text)
         solver =  MainSolver(scenario_text = scenario_text, graph_text=graph_text)
-        return solver.return_value()
+        solution = solver.return_value()
 
+        final_answer = {}
+        for i in range(len(solution)):
+            final_answer[f"Truck{i}"] = [dictdata[x] for x in solution[i]]
+
+        print(final_answer)
+        return jsonify(final_answer)
 app.run()

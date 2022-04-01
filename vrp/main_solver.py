@@ -16,7 +16,8 @@ CAPACITY = 1000
 class MainSolver:
     def __init__(self, scenario_text, graph_text):
 
-
+        print(scenario_text)
+        print(graph_text)
         # Solomon
         #GRAPH = '../graphs/50/' + str(t) + '.csv'
         #TEST = '../solomon/50/' + str(t) + '.test'
@@ -53,33 +54,25 @@ class MainSolver:
 
         problem = VRPProblem(sources, costs, time_costs, capacities, dests, weigths)
         #solver = FullQuboSolver(problem)
-        #solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False, MAX_LEN = 10))
+        # solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False, MAX_LEN = 10))
         solver = SolutionPartitioningSolver(problem, FullQuboSolver(problem))
 
         #problem = VRPTWProblem(sources, costs, time_costs, capacities, dests, weigths, time_windows)
         #vrp_solver = SolutionPartitioningSolver(problem, DBScanSolver(problem, anti_noiser = False))
         #solver = MergingTimeWindowsVRPTWSolver(problem, vrp_solver)
 
+        #result = solver.solve(only_one_const, order_const, capacity_const,
+        #        solver_type = 'qbsolv', num_reads = 500)
+
         result = solver.solve(only_one_const, order_const, capacity_const,
                 solver_type = 'braket', num_reads = 500)
-
         if result == None:
-            return ("No solution, something went wrong:(\n")
+            result.solution = [[], []]
 
-        
-        altered_result = []
-        for truck_path in result.solution:
-            truck_path = [x + 1 for x in truck_path]
-
-        for truck_path in altered_result:
-            for i in range(len(truck_path) - 1):
-                truck_path[i:i+2] = dijkstra_paths[truck_path[i]][truck_path[i+1]]
-            altered_result.append(truck_path)
-        
         print(result.solution)
-        print(altered_result)
+
         
-        self.value = altered_result
+        self.value = result.solution
         
     def return_value(self):
         return self.value
